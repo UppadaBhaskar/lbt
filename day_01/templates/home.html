@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Learn by Tech — Day 3</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="nav">
+        <a href="{{ url_for('home') }}">Home</a>
+    </nav>
+    <main class="main">
+        <h1>Hello, Flask</h1>
+        <p>This page is rendered with <code>render_template('home.html')</code>.</p>
+        <p>Styles come from <code>static/css/style.css</code> via <code>url_for('static', filename='css/style.css')</code>.</p>
+        <p><strong>Day 3:</strong> Flask-SQLAlchemy is configured; <code>db.create_all()</code> runs on startup (tables start in Day 4).</p>
+    </main>
+</body>
+</html>

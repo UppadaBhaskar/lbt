@@ -1,33 +1,37 @@
 """
-Day 1 — Hello Flask
-Minimal WSGI app: one route `/` returning simple HTML.
+Day 1–3 — Flask + templates/static + MySQL (Flask-SQLAlchemy)
 Run: python app.py   OR   flask run
+
+Requires: MySQL server, database `lms_db`, and a valid SQLALCHEMY_DATABASE_URI (see config.py).
 """
 
-from flask import Flask
+import os
 
-app = Flask(__name__)
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
+
+from config import Config
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+db = SQLAlchemy()
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static"),
+)
+app.config.from_object(Config)
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+    print("Database: db.create_all() finished (no models yet — no tables until Day 4).")
 
 
 @app.route("/")
 def home():
-    return """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Learn by Tech — Day 1</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-        code { background: #f4f4f4; padding: 0.15em 0.4em; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <h1>Hello, Flask</h1>
-    <p>This is the <strong>Day 1</strong> deliverable: a running Flask app with a single route <code>/</code>.</p>
-    <p>When you open <code>http://127.0.0.1:5000/</code>, the browser sends an HTTP GET; Flask matches the URL to the
-    <code>home</code> view and returns this HTML response.</p>
-</body>
-</html>"""
+    return render_template("home.html")
 
 
 if __name__ == "__main__":
