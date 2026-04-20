@@ -11,7 +11,12 @@
         {% for category, msg in get_flashed_messages(with_categories=true) %}
             <p class="flash flash-{{ category }}">{{ msg }}</p>
         {% endfor %}
-        <p><a href="{{ url_for('register') }}">Register</a></p>
+        {% if session.get('user_id') %}
+            <p>Signed in as <strong>{{ session.get('username') }}</strong> ({{ session.get('role') }}).</p>
+            <p><a href="{{ url_for('logout') }}">Log out</a></p>
+        {% else %}
+            <p><a href="{{ url_for('login') }}">Log in</a> · <a href="{{ url_for('register') }}">Register</a></p>
+        {% endif %}
     </main>
 </body>
 </html>

@@ -13,4 +13,4 @@ Create DB `ex-db` in MySQL (or set `SQLALCHEMY_DATABASE_URI`). Password `@` must
 python app.py
 ```
 
-Open `http://127.0.0.1:5000/`. Register at `/register`.
+Open `http://127.0.0.1:5000/`. `/register`, `/login`, `/logout`.
