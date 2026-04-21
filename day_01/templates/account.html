@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main>
+        <h1>Account</h1>
+        <p>This page requires login (<code>@login_required</code>).</p>
+        <p>User id: {{ session.get('user_id') }} · Role: {{ session.get('role') }}</p>
+        <p><a href="{{ url_for('home') }}">Home</a></p>
+    </main>
+</body>
+</html>

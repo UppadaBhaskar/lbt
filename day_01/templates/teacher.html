@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Teacher area</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main>
+        <h1>Teacher area</h1>
+        <p>Only users with role <code>teacher</code> can see this (<code>@role_required</code>).</p>
+        <p><a href="{{ url_for('home') }}">Home</a></p>
+    </main>
+</body>
+</html>

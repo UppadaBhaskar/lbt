@@ -1,4 +1,6 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from functools import wraps
+
+from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config
@@ -12,6 +14,38 @@ from models import User  # noqa: F401 — register model before create_all
 
 with app.app_context():
     db.create_all()
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_id"):
+            flash("Please log in to continue.", "error")
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+
+    return wrapped
+
+
+def role_required(role):
+    def decorator(view):
+        @wraps(view)
+        def wrapped(*args, **kwargs):
+            if not session.get("user_id"):
+                flash("Please log in to continue.", "error")
+                return redirect(url_for("login"))
+            if session.get("role") != role:
+                abort(403)
+            return view(*args, **kwargs)
+
+        return wrapped
+
+    return decorator
+
+
+@app.errorhandler(403)
+def forbidden(_e):
+    return render_template("403.html"), 403
 
 
 @app.route("/")
@@ -95,6 +129,19 @@ def logout():
     session.clear()
     flash("Logged out.", "success")
     return redirect(url_for("home"))
+
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template("account.html")
+
+
+@app.route("/teacher")
+@login_required
+@role_required("teacher")
+def teacher_page():
+    return render_template("teacher.html")
 
 
 if __name__ == "__main__":
