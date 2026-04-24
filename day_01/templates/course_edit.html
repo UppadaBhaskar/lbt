@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Edit course</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main>
+        <h1>Edit course</h1>
+        {% for category, msg in get_flashed_messages(with_categories=true) %}
+            <p class="flash flash-{{ category }}">{{ msg }}</p>
+        {% endfor %}
+        <form method="post" action="{{ url_for('course_edit', course_id=course.id) }}">
+            <p>
+                <label for="title">Title</label><br>
+                <input id="title" name="title" value="{{ course.title }}" required>
+            </p>
+            <p>
+                <label for="description">Description</label><br>
+                <textarea id="description" name="description" rows="4" cols="40">{{ course.description or '' }}</textarea>
+            </p>
+            <button type="submit">Save</button>
+        </form>
+        <p><a href="{{ url_for('course_detail', course_id=course.id) }}">Back</a> · <a href="{{ url_for('course_list') }}">All courses</a></p>
+    </main>
+</body>
+</html>

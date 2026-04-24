@@ -13,4 +13,4 @@ Create DB `ex-db` in MySQL (or set `SQLALCHEMY_DATABASE_URI`). Password `@` must
 python app.py
 ```
 
-Open `http://127.0.0.1:5000/`. `/register`, `/login`, `/logout`, `/account` (login required), `/teacher` (teacher only, else 403).
+Open `http://127.0.0.1:5000/`. Auth: `/register`, `/login`, `/logout`, `/account`, `/teacher`. **Day 8:** `/courses` (login), `/courses/new` (teacher), `/courses/<id>`, `/courses/<id>/edit`, POST `/courses/<id>/delete` (owner teacher).

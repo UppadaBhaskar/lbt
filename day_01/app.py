@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-from models import User  # noqa: F401 — register model before create_all
+from models import Course, User  # noqa: F401 — register models before create_all
 
 with app.app_context():
     db.create_all()
@@ -142,6 +142,85 @@ def account():
 @role_required("teacher")
 def teacher_page():
     return render_template("teacher.html")
+
+
+@app.route("/courses")
+@login_required
+def course_list():
+    courses = Course.query.order_by(Course.created_at.desc()).all()
+    return render_template("course_list.html", courses=courses)
+
+
+@app.route("/courses/new", methods=["GET", "POST"])
+@login_required
+@role_required("teacher")
+def course_new():
+    if request.method == "POST":
+        title = (request.form.get("title") or "").strip()
+        description = (request.form.get("description") or "").strip()
+        if not title:
+            flash("Title is required.", "error")
+            return render_template("course_form.html", title=title, description=description)
+        try:
+            course = Course(
+                title=title,
+                description=description or None,
+                teacher_id=session["user_id"],
+            )
+            db.session.add(course)
+            db.session.commit()
+            flash("Course created.", "success")
+            return redirect(url_for("course_detail", course_id=course.id))
+        except Exception:
+            db.session.rollback()
+            flash("Could not save course.", "error")
+            return render_template("course_form.html", title=title, description=description)
+    return render_template("course_form.html")
+
+
+@app.route("/courses/<int:course_id>")
+@login_required
+def course_detail(course_id):
+    course = Course.query.get_or_404(course_id)
+    return render_template("course_detail.html", course=course)
+
+
+@app.route("/courses/<int:course_id>/edit", methods=["GET", "POST"])
+@login_required
+@role_required("teacher")
+def course_edit(course_id):
+    course = Course.query.get_or_404(course_id)
+    if course.teacher_id != session.get("user_id"):
+        abort(403)
+    if request.method == "POST":
+        title = (request.form.get("title") or "").strip()
+        description = (request.form.get("description") or "").strip()
+        if not title:
+            flash("Title is required.", "error")
+            return render_template("course_edit.html", course=course)
+        try:
+            course.title = title
+            course.description = description or None
+            db.session.commit()
+            flash("Course updated.", "success")
+            return redirect(url_for("course_detail", course_id=course.id))
+        except Exception:
+            db.session.rollback()
+            flash("Could not update course.", "error")
+    return render_template("course_edit.html", course=course)
+
+
+@app.route("/courses/<int:course_id>/delete", methods=["POST"])
+@login_required
+@role_required("teacher")
+def course_delete(course_id):
+    course = Course.query.get_or_404(course_id)
+    if course.teacher_id != session.get("user_id"):
+        abort(403)
+    db.session.delete(course)
+    db.session.commit()
+    flash("Course deleted.", "success")
+    return redirect(url_for("course_list"))
 
 
 if __name__ == "__main__":
